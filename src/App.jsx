@@ -1258,12 +1258,12 @@ function ProfilePage({ user, setUser, posts, t }) {
                   }
                 }} style={{display:"none"}}/>
               </div>
-              <div style={{flex:1,paddingBottom:4,minWidth:0}}>
-                {full.trim()&&<div style={{fontSize:13,color:t.muted,fontWeight:600,marginBottom:1}}>{full}</div>}
-                <div style={{fontSize:18,fontWeight:900,color:t.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user.pseudo}</div>
-                <div style={{display:"flex",gap:7,marginTop:5,alignItems:"center"}}><RolePill role={user.role} t={t}/>{user.nat&&<span style={{fontSize:18}}>{user.nat}</span>}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:20,fontWeight:900,color:t.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:4}}>{user.pseudo}</div>
+                <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap"}}><RolePill role={user.role} t={t}/>{user.nat&&<span style={{fontSize:18}}>{user.nat}</span>}</div>
+                {full.trim()&&<div style={{fontSize:12,color:t.muted,fontWeight:600,marginTop:3}}>{full}</div>}
               </div>
-              <Btn onClick={()=>{if(editing)setUser({...user,bio});setEditing(!editing);}} variant="secondary" t={t} style={{flexShrink:0}}>{editing?"💾 Sauv.":"✏️ Éditer"}</Btn>
+              <Btn onClick={()=>{if(editing)setUser({...user,bio});setEditing(!editing);}} variant="secondary" t={t} style={{flexShrink:0,alignSelf:"flex-start",marginTop:4}}>{editing?"💾 Sauv.":"✏️ Éditer"}</Btn>
             </div>
             {editing
               ?<Inp label="BIO" value={bio} onChange={setBio} placeholder="Ta bio…" multi rows={2} t={t}/>
