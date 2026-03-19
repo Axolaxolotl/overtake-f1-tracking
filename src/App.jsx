@@ -1241,7 +1241,7 @@ function ProfilePage({ user, setUser, posts, t }) {
         <div style={{background:t.card,borderRadius:20,overflow:"hidden",marginBottom:14,border:`1px solid ${t.border}`}}>
           <div style={{height:90,background:t.grad,opacity:0.3,position:"relative"}}><BannerEdit user={user} setUser={setUser} t={t}/></div>
           <div style={{padding:"0 18px 18px"}}>
-            <div style={{display:"flex",alignItems:"flex-end",gap:12,marginTop:-28,marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,marginTop:-20,marginBottom:16}}>
               <div style={{position:"relative",flexShrink:0}}>
                 <Av src={user.avatar} letter={user.av} color={user.color} size={72} style={{border:`3px solid ${t.card}`}}/>
                 <button onClick={()=>imgRef.current?.click()} style={{position:"absolute",bottom:-4,right:-4,width:28,height:28,borderRadius:"50%",background:t.accent,border:`2px solid ${t.card}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>📷</button>
