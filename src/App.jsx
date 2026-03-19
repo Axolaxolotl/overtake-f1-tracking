@@ -1266,7 +1266,7 @@ function ProfilePage({ user, setUser, posts, t }) {
                 </div>
                 {full.trim()&&<div style={{fontSize:12,color:t.muted,fontWeight:600,marginTop:3}}>{full}</div>}
               </div>
-              <Btn onClick={()=>{if(editing)setUser({...user,bio});setEditing(!editing);}} variant="secondary" t={t} style={{flexShrink:0,alignSelf:"flex-start",marginTop:4}}>{editing?"💾 Sauv.":"✏️ Éditer"}</Btn>
+              <Btn onClick={()=>{if(editing)setUser({...user,bio});setEditing(!editing);}} variant="secondary" t={t} style={{flexShrink:0,alignSelf:"flex-end",marginBottom:2}}>{editing?"💾 Sauv.":"✏️ Éditer"}</Btn>
             </div>
             {editing
               ?<Inp label="BIO" value={bio} onChange={setBio} placeholder="Ta bio…" multi rows={2} t={t}/>
