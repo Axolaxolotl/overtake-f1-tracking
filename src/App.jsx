@@ -86,24 +86,8 @@ const SEED_NOTIFS = [
   { id:2, type:"like", from:"Lando_Norris", text:"a aimé ta publication", time:"2h", read:false, targetId:2 },
   { id:3, type:"announce", from:"Admin_OverTake", text:"Nouvelle annonce : Calendrier 2025 !", time:"2j", read:true, targetId:null },
 ];
-const WDC = [
-  {id:1,name:"Max Verstappen",  short:"Verstappen",team:"Red Bull Racing",num:1, nat:"🇳🇱",pts:43,color:"#3671C6"},
-  {id:2,name:"Lewis Hamilton",  short:"Hamilton",  team:"Ferrari",        num:44,nat:"🇬🇧",pts:37,color:"#E8002D"},
-  {id:3,name:"Charles Leclerc",short:"Leclerc",   team:"Ferrari",        num:16,nat:"🇲🇨",pts:28,color:"#E8002D"},
-  {id:4,name:"Lando Norris",   short:"Norris",    team:"McLaren",        num:4, nat:"🇬🇧",pts:27,color:"#FF8000"},
-  {id:5,name:"Oscar Piastri",  short:"Piastri",   team:"McLaren",        num:81,nat:"🇦🇺",pts:15,color:"#FF8000"},
-  {id:6,name:"Carlos Sainz",   short:"Sainz",     team:"Williams",       num:55,nat:"🇪🇸",pts:10,color:"#64C4FF"},
-  {id:7,name:"George Russell",  short:"Russell",   team:"Mercedes",       num:63,nat:"🇬🇧",pts:8, color:"#27F4D2"},
-  {id:8,name:"Fernando Alonso",short:"Alonso",    team:"Aston Martin",   num:14,nat:"🇪🇸",pts:4, color:"#358C75"},
-];
-const WCC = [
-  {team:"Ferrari",        color:"#E8002D",pts:65},
-  {team:"Red Bull Racing",color:"#3671C6",pts:61},
-  {team:"McLaren",        color:"#FF8000",pts:42},
-  {team:"Williams",       color:"#64C4FF",pts:10},
-  {team:"Mercedes",       color:"#27F4D2",pts:8},
-  {team:"Aston Martin",   color:"#358C75",pts:4},
-];
+const WDC = [];
+const WCC = [];
 
 /* ═══════════════════════════════════════════════════════════
    TIRE SVG
@@ -131,6 +115,29 @@ function Av({ src, letter, color, size=40, style={} }) {
     </div>
   );
 }
+function BannerEdit({ user, setUser, t }) {
+  const ref=useRef(null);
+  const uploadBanner=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    const ext=f.name.split('.').pop();
+    const path=`${user.id}/banner.${ext}`;
+    const{error}=await supabase.storage.from('avatars').upload(path,f,{upsert:true});
+    if(!error){
+      const{data}=supabase.storage.from('avatars').getPublicUrl(path);
+      const url=data.publicUrl+'?t='+Date.now();
+      await supabase.from('profiles').update({banner_url:url}).eq('id',user.id);
+      setUser({...user,banner:url});
+    }
+  };
+  return (
+    <>
+      {user.banner&&<img src={user.banner} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.7}}/>}
+      <button onClick={()=>ref.current?.click()} style={{position:"absolute",bottom:6,right:8,background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,padding:"4px 10px",color:"#fff",fontSize:11,fontWeight:700,cursor:"pointer",zIndex:2}}>🖼️ Bannière</button>
+      <input ref={ref} type="file" accept="image/*" onChange={uploadBanner} style={{display:"none"}}/>
+    </>
+  );
+}
+
 function Chip({ label, color }) {
   return <span style={{background:color+"20",border:`1px solid ${color}44`,borderRadius:20,padding:"3px 9px",fontSize:11,fontWeight:700,color,flexShrink:0}}>{label}</span>;
 }
@@ -350,7 +357,8 @@ function AuthScreen({ onLogin, t }) {
           av:profile.username.slice(0,2).toUpperCase(),
           bio:profile.bio||"",
           joined:"2025",
-          avatar:profile.avatar_url||null
+          avatar:profile.avatar_url||null,
+          banner:profile.banner_url||null
         });
       }
     } catch(e){setLiErr("Erreur de connexion.");}
@@ -390,6 +398,7 @@ function AuthScreen({ onLogin, t }) {
         race_number:reg.num?parseInt(reg.num):null,
         nationality:reg.nat||null,
         avatar_url:null,
+        banner_url:null,
         color,
       });
       const nu={
@@ -803,13 +812,21 @@ function SocialPage({ posts, setPosts, user, users, t, setNotifs, setTab, setVie
             </div>
             <div style={{position:"relative",marginBottom:10}}>
               <textarea value={text} onChange={e=>handleText(e.target.value)} placeholder="Partage… utilise @ pour mentionner" style={{width:"100%",minHeight:80,background:t.inp,border:`1.5px solid ${t.border}`,borderRadius:12,padding:12,color:t.text,fontSize:16,outline:"none",resize:"vertical",boxSizing:"border-box",fontFamily:"inherit"}}/>
-              {showMentions&&filteredUsers.length>0&&(
-                <div style={{position:"absolute",bottom:"calc(100% + 4px)",left:0,right:0,background:t.card,border:`1px solid ${t.border}`,borderRadius:12,overflow:"hidden",zIndex:10,boxShadow:t.shadow}}>
-                  {filteredUsers.map(u=>(
-                    <button key={u.id} onClick={()=>addMention(u.pseudo)} style={{width:"100%",padding:"11px 14px",background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:10,minHeight:48}}>
-                      <Av src={u.avatar} letter={u.av} color={u.color} size={28}/><span style={{fontWeight:700,color:t.text,fontSize:14}}>@{u.pseudo}</span>
-                    </button>
-                  ))}
+              {showMentions&&(
+                <div style={{position:"absolute",bottom:"calc(100% + 4px)",left:0,right:0,background:t.card,border:`1px solid ${t.border}`,borderRadius:12,overflow:"hidden",zIndex:10,boxShadow:t.shadow,maxHeight:220,overflowY:"auto"}}>
+                  {filteredUsers.length===0
+                    ?<div style={{padding:"12px 14px",color:t.muted,fontSize:13}}>Aucun utilisateur trouvé</div>
+                    :filteredUsers.map(u=>(
+                      <button key={u.id} onClick={()=>addMention(u.pseudo)} style={{width:"100%",padding:"11px 14px",background:"transparent",border:"none",borderBottom:`1px solid ${t.border}`,cursor:"pointer",display:"flex",alignItems:"center",gap:10,minHeight:48}}>
+                        <Av src={u.avatar} letter={u.av} color={u.color} size={32}/>
+                        <div style={{textAlign:"left"}}>
+                          <div style={{fontWeight:700,color:t.text,fontSize:14}}>@{u.pseudo}</div>
+                          {u.team&&<div style={{fontSize:11,color:t.muted}}>{u.team}</div>}
+                        </div>
+                        <RolePill role={u.role} t={t}/>
+                      </button>
+                    ))
+                  }
                 </div>
               )}
             </div>
@@ -1222,9 +1239,9 @@ function ProfilePage({ user, setUser, posts, t }) {
       <TopBar title="Mon Profil" t={t}/>
       <div style={{padding:"14px 14px 0"}}>
         <div style={{background:t.card,borderRadius:20,overflow:"hidden",marginBottom:14,border:`1px solid ${t.border}`}}>
-          <div style={{height:90,background:t.grad,opacity:0.3}}/>
+          <div style={{height:90,background:t.grad,opacity:0.3,position:"relative"}}><BannerEdit user={user} setUser={setUser} t={t}/></div>
           <div style={{padding:"0 18px 18px"}}>
-            <div style={{display:"flex",alignItems:"flex-end",gap:12,marginTop:-38,marginBottom:12}}>
+            <div style={{display:"flex",alignItems:"flex-end",gap:12,marginTop:-28,marginBottom:16}}>
               <div style={{position:"relative",flexShrink:0}}>
                 <Av src={user.avatar} letter={user.av} color={user.color} size={72} style={{border:`3px solid ${t.card}`}}/>
                 <button onClick={()=>imgRef.current?.click()} style={{position:"absolute",bottom:-4,right:-4,width:28,height:28,borderRadius:"50%",background:t.accent,border:`2px solid ${t.card}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>📷</button>
@@ -1563,7 +1580,8 @@ export default function App() {
           av:p.username.slice(0,2).toUpperCase(),
           bio:p.bio||"",
           joined:"2025",
-          avatar:p.avatar_url||null
+          avatar:p.avatar_url||null,
+          banner:p.banner_url||null
         })));
       }
     };
