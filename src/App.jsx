@@ -205,7 +205,7 @@ function Logo({ size=36 }) {
 ═══════════════════════════════════════════════════════════ */
 function TopBar({ title, t, right, onBack, backLabel }) {
   return (
-    <div style={{position:"sticky",top:0,zIndex:100,background:t.nav,backdropFilter:"blur(20px)",borderBottom:`1px solid ${t.border}`,padding:"env(safe-area-inset-top,0) 16px 0",paddingBottom:0}}>
+    <div style={{position:"sticky",top:0,zIndex:100,background:t.nav,backdropFilter:"blur(20px)",borderBottom:`1px solid ${t.border}`,padding:"0 16px"}}>
       <div style={{height:56,display:"flex",alignItems:"center",gap:10}}>
         {onBack
           ? <button onClick={onBack} style={{background:"none",border:"none",cursor:"pointer",color:t.accent,fontSize:14,fontWeight:700,display:"flex",alignItems:"center",gap:4,flexShrink:0,padding:"4px 0",minWidth:44,minHeight:44}}>‹ {backLabel||"Retour"}</button>
@@ -976,8 +976,38 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
   const[showGrp,setShowGrp]=useState(false);
   const[grpName,setGrpName]=useState("");
   const[selected,setSelected]=useState([]);
+  const[convMessages,setConvMessages]=useState([]);
   const msgEndRef=useRef(null);
   const myConvs=messages.filter(c=>c.participants.includes(user.id));
+
+  // Charger conversations depuis Supabase
+  useEffect(()=>{
+    const fetchConvs=async()=>{
+      const{data}=await supabase.from('conversations').select('*').contains('participants',[user.id]);
+      if(data&&data.length>0){
+        setMessages(data.map(c=>({...c,messages:[]})));
+      }
+    };
+    fetchConvs();
+  },[user.id]);
+
+  // Charger messages de la conv active + realtime
+  useEffect(()=>{
+    if(!activeConv)return;
+    const fetchMsgs=async()=>{
+      const{data}=await supabase.from('messages').select('*').eq('conversation_id',activeConv).order('created_at',{ascending:true});
+      if(data)setConvMessages(data.map(m=>({id:m.id,from:m.sender_id,text:m.content,time:new Date(m.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})})));
+    };
+    fetchMsgs();
+    const channel=supabase.channel('messages-'+activeConv)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${activeConv}`},payload=>{
+        const m=payload.new;
+        setConvMessages(prev=>[...prev,{id:m.id,from:m.sender_id,text:m.content,time:new Date(m.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}]);
+        setTimeout(()=>msgEndRef.current?.scrollIntoView({behavior:"smooth"}),50);
+      })
+      .subscribe();
+    return()=>supabase.removeChannel(channel);
+  },[activeConv]);
 
   const getName=c=>{
     if(c.type==="group")return c.name||"Groupe";
@@ -997,15 +1027,20 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
     const u=users.find(x=>x.id===m.from);
     return`${u?u.pseudo.split("_")[0]:"?"}: ${m.text}`;
   };
-  const send=()=>{
+  const send=async()=>{
     if(!newMsg.trim()||!activeConv)return;
-    setMessages(messages.map(c=>c.id===activeConv?{...c,messages:[...c.messages,{id:Date.now(),from:user.id,text:newMsg,time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}]}:c));
+    const txt=newMsg;
     setNewMsg("");
+    await supabase.from('messages').insert({conversation_id:activeConv,sender_id:user.id,content:txt});
     setTimeout(()=>msgEndRef.current?.scrollIntoView({behavior:"smooth"}),50);
   };
-  const createDM=uid=>{
+  const createDM=async uid=>{
     const ex=messages.find(c=>c.type==="dm"&&c.participants.includes(user.id)&&c.participants.includes(uid));
-    if(ex){setActiveConv(ex.id);}else{const nc={id:Date.now(),type:"dm",participants:[user.id,uid],name:"",messages:[]};setMessages([...messages,nc]);setActiveConv(nc.id);}
+    if(ex){setActiveConv(ex.id);}
+    else{
+      const{data}=await supabase.from('conversations').insert({type:"dm",participants:[user.id,uid],name:""}).select().single();
+      if(data){setMessages(prev=>[...prev,{...data,messages:[]}]);setActiveConv(data.id);}
+    }
     setShowNew(false);
   };
   const createGroup=()=>{
@@ -1031,8 +1066,8 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
           </div>
         </div>
         <div style={{flex:1,overflowY:"auto",padding:"14px",display:"flex",flexDirection:"column",gap:10}}>
-          {conv.messages.length===0&&<div style={{textAlign:"center",color:t.muted,fontSize:14,marginTop:30}}>Début de la conversation 💬</div>}
-          {conv.messages.map(m=>{
+          {convMessages.length===0&&<div style={{textAlign:"center",color:t.muted,fontSize:14,marginTop:30}}>Début de la conversation 💬</div>}
+          {convMessages.map(m=>{
             const isMe=m.from===user.id;
             const sender=users.find(x=>x.id===m.from);
             return (
@@ -1266,7 +1301,13 @@ function ProfilePage({ user, setUser, posts, t }) {
                 </div>
                 {full.trim()&&<div style={{fontSize:12,color:t.muted,fontWeight:600,marginTop:3}}>{full}</div>}
               </div>
-              <Btn onClick={()=>{if(editing)setUser({...user,bio});setEditing(!editing);}} variant="secondary" t={t} style={{flexShrink:0,alignSelf:"flex-end",marginBottom:2}}>{editing?"💾 Sauv.":"✏️ Éditer"}</Btn>
+              <Btn onClick={async()=>{
+                if(editing){
+                  await supabase.from('profiles').update({bio}).eq('id',user.id);
+                  setUser({...user,bio});
+                }
+                setEditing(!editing);
+              }} variant="secondary" t={t} style={{flexShrink:0,alignSelf:"flex-end",marginBottom:2}}>{editing?"💾 Sauv.":"✏️ Éditer"}</Btn>
             </div>
             {editing
               ?<Inp label="BIO" value={bio} onChange={setBio} placeholder="Ta bio…" multi rows={2} t={t}/>
