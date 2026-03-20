@@ -972,8 +972,22 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
   const[grpName,setGrpName]=useState("");
   const[selected,setSelected]=useState([]);
   const[convMessages,setConvMessages]=useState([]);
+  const[allUsers,setAllUsers]=useState(users);
   const msgEndRef=useRef(null);
   const myConvs=messages.filter(c=>c.participants.includes(user.id));
+
+  // Charger tous les users si liste vide
+  useEffect(()=>{
+    if(users.length>1){setAllUsers(users);return;}
+    supabase.from('profiles').select('*').then(({data})=>{
+      if(data)setAllUsers(data.map(p=>({
+        id:p.id,pseudo:p.username,role:p.role||"spectateur",
+        av:p.username.slice(0,2).toUpperCase(),
+        color:p.color||AV_COLORS[0],avatar:p.avatar_url||null,
+        team:p.team||"",nat:p.nationality||"🇫🇷"
+      })));
+    });
+  },[users]);
 
   // Charger conversations depuis Supabase
   useEffect(()=>{
@@ -1050,7 +1064,7 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
     setShowGrp(false);setGrpName("");setSelected([]);
   };
   const conv=messages.find(c=>c.id===activeConv);
-  const otherUsers=users.filter(u=>u.id!==user.id);
+  const otherUsers=allUsers.filter(u=>u.id!==user.id);
 
   if (activeConv&&conv) {
     return (
@@ -1640,6 +1654,29 @@ export default function App() {
   const msgCount=messages.filter(c=>c.participants.includes(user?.id)&&c.messages.length>0&&c.messages[c.messages.length-1]?.from!==user?.id).length;
 
   const updateUser=u=>{setUser(u);setUsers(prev=>prev.map(x=>x.id===u.id?u:x));};
+
+  // Listener global pour notifications de nouveaux messages
+  useEffect(()=>{
+    if(!user)return;
+    const channel=supabase.channel('global-messages-'+user.id)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},async payload=>{
+        const m=payload.new;
+        if(m.sender_id===user.id)return;
+        // Vérifier si ce message est dans une conv de l'user
+        const{data:conv}=await supabase.from('conversations').select('participants').eq('id',m.conversation_id).single();
+        if(!conv||!conv.participants.includes(user.id))return;
+        // Chercher le sender
+        const{data:sender}=await supabase.from('profiles').select('username').eq('id',m.sender_id).single();
+        setNotifs(prev=>[{
+          id:Date.now(),type:"message",
+          from:sender?.username||"?",
+          text:"t'a envoyé un message 💬",
+          time:"maintenant",read:false,targetId:user.id
+        },...prev]);
+      })
+      .subscribe();
+    return()=>supabase.removeChannel(channel);
+  },[user?.id]);
 
   // Charger tous les utilisateurs depuis Supabase
   useEffect(()=>{
