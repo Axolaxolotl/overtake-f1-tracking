@@ -768,6 +768,14 @@ function SocialPage({ posts, setPosts, user, users, t, setNotifs, setTab, setVie
       user_id:user.id, content:text, race_tag:tag, image_url:imgPrev||null,
     }).select().single();
     if(!error&&data){
+      // Notifs mentions
+      const re=/@(\w+)/g; let m;
+      while((m=re.exec(text))!==null){
+        const mentioned=users.find(x=>x.pseudo.toLowerCase()===m[1].toLowerCase());
+        if(mentioned&&mentioned.id!==user.id){
+          setNotifs(prev=>[{id:Date.now()+Math.random(),type:"mention",from:user.pseudo,text:"t'a mentionné dans une publication",time:"maintenant",read:false,targetId:mentioned.id},...prev]);
+        }
+      }
       setPosts(prev=>[{
         id:data.id, authorId:user.id, pseudo:user.pseudo, av:user.av,
         color:user.color, avatar:user.avatar||null, role:user.role,
@@ -1172,7 +1180,7 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
 ═══════════════════════════════════════════════════════════ */
 function NotifPage({ notifs, setNotifs, user, t }) {
   const myNotifs=notifs.filter(n=>!n.targetId||n.targetId===user.id);
-  const icons={mention:"💬",like:"❤️",comment:"💬",announce:"📢"};
+  const icons={mention:"💬",like:"❤️",comment:"🗨️",announce:"📢",race:"🏁",message:"✉️"};
   return (
     <div>
       <TopBar title="Notifications" t={t} right={myNotifs.some(n=>!n.read)&&<button onClick={()=>setNotifs(notifs.map(n=>({...n,read:true})))} style={{background:"none",border:"none",color:t.accent,cursor:"pointer",fontSize:13,fontWeight:700,minHeight:36}}>Tout lire</button>}/>
@@ -1405,7 +1413,13 @@ function AdminPage({ races, setRaces, posts, setPosts, anns, setAnns, t, user, s
   };
   const submitAnn=()=>{
     if(!af.title.trim()||!af.body.trim())return;
-    setAnns([{id:Date.now(),...af,author:"Admin_OverTake",time:"maintenant",readBy:[]},...anns]);
+    setAnns([{id:Date.now(),...af,author:user.pseudo,time:"maintenant",readBy:[]},...anns]);
+    // Notif pour tous les utilisateurs
+    users.forEach(u=>{
+      if(u.id!==user.id){
+        setNotifs(prev=>[{id:Date.now()+Math.random(),type:"announce",from:user.pseudo,text:`a publié une annonce : "${af.title}"`,time:"maintenant",read:false,targetId:u.id},...prev]);
+      }
+    });
     setAf({title:"",body:"",pinned:false}); setSec("overview"); alert("✅ Annonce publiée !");
   };
 
