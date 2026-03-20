@@ -993,11 +993,19 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
   useEffect(()=>{
     const fetchConvs=async()=>{
       const{data}=await supabase.from('conversations').select('*').contains('participants',[user.id]);
-      if(data&&data.length>0){
-        setMessages(data.map(c=>({...c,messages:[]})));
-      }
+      setMessages((data||[]).map(c=>({...c,messages:[]})));
     };
     fetchConvs();
+    // Realtime nouvelles conversations
+    const ch=supabase.channel('convs-'+user.id)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'conversations'},payload=>{
+        const c=payload.new;
+        if(c.participants?.includes(user.id)){
+          setMessages(prev=>[...prev,{...c,messages:[]}]);
+        }
+      })
+      .subscribe();
+    return()=>supabase.removeChannel(ch);
   },[user.id]);
 
   // Charger messages de la conv active + realtime
@@ -1035,12 +1043,7 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
     const u=users.find(x=>x.id===other);
     return u?{letter:u.av,color:u.color,src:u.avatar}:{letter:"?",color:"#888",src:null};
   };
-  const lastMsg=c=>{
-    if(!c.messages.length)return"Commencer la conversation…";
-    const m=c.messages[c.messages.length-1];
-    const u=users.find(x=>x.id===m.from);
-    return`${u?u.pseudo.split("_")[0]:"?"}: ${m.text}`;
-  };
+  const lastMsg=c=>{"Commencer la conversation…";return"Commencer la conversation…";};
   const send=async()=>{
     if(!newMsg.trim()||!activeConv)return;
     const txt=newMsg;
@@ -1146,16 +1149,17 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
         {myConvs.map(c=>{
           const av=getAv(c);
           return (
-            <button key={c.id} onClick={()=>setActiveConv(c.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:13,padding:"14px",borderRadius:16,border:`1px solid ${t.border}`,cursor:"pointer",background:t.card,marginBottom:8,textAlign:"left",minHeight:70}}>
-              <div style={{position:"relative"}}>
+            <div key={c.id} style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+              <button onClick={()=>setActiveConv(c.id)} style={{flex:1,display:"flex",alignItems:"center",gap:13,padding:"14px",borderRadius:16,border:`1px solid ${t.border}`,cursor:"pointer",background:t.card,textAlign:"left",minHeight:70}}>
                 <Av src={av.src} letter={av.letter} color={av.color} size={46}/>
-              </div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontWeight:700,color:t.text,fontSize:15,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:3}}>{getName(c)}</div>
-                <div style={{fontSize:13,color:t.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{lastMsg(c)}</div>
-              </div>
-              <span style={{color:t.muted,fontSize:20}}>›</span>
-            </button>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:700,color:t.text,fontSize:15,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:3}}>{getName(c)}</div>
+                  <div style={{fontSize:13,color:t.muted}}>Commencer la conversation…</div>
+                </div>
+                <span style={{color:t.muted,fontSize:20}}>›</span>
+              </button>
+              <button onClick={async()=>{await supabase.from('conversations').delete().eq('id',c.id);setMessages(prev=>prev.filter(x=>x.id!==c.id));}} style={{background:"rgba(192,0,0,0.15)",border:"1px solid rgba(192,0,0,0.3)",borderRadius:12,padding:"10px 12px",cursor:"pointer",color:"#f07070",fontSize:16,minHeight:44,flexShrink:0}}>🗑️</button>
+            </div>
           );
         })}
       </div>
