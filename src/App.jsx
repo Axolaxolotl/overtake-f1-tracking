@@ -62,12 +62,7 @@ const SEED_USERS = [
   { id:5, pseudo:"Charles_Leclerc",password:"pass123",  role:"pilote",  firstName:"Charles",lastName:"Leclerc",    num:16,   team:"Ferrari",         nat:"🇲🇨", color:"#E8002D", av:"CL", bio:"Monaco boy 🇲🇨 | Scuderia Ferrari", joined:"Mars 2025", avatar:null },
   { id:6, pseudo:"Spectateur",     password:"viewer1",  role:"spectateur",firstName:"",    lastName:"",           num:null, team:null,              nat:"🏳️", color:"#6677aa", av:"SP", bio:"Fan de F1 🏁", joined:"Mars 2025", avatar:null },
 ];
-const SEED_RACES = [
-  { id:1, name:"GP de Bahreïn", circuit:"Sakhir", date:"2 Mars 2025", round:1, cat:"F1", flag:"🇧🇭", by:"Admin_OverTake", at:"Il y a 3j",
-    results:[{pos:1,driver:"Max Verstappen",team:"Red Bull Racing",gap:"1:30:55.554",pts:25,fl:false},{pos:2,driver:"Charles Leclerc",team:"Ferrari",gap:"+6.490s",pts:18,fl:false},{pos:3,driver:"Lando Norris",team:"McLaren",gap:"+9.227s",pts:15,fl:true},{pos:4,driver:"Lewis Hamilton",team:"Ferrari",gap:"+14.876s",pts:12,fl:false},{pos:5,driver:"Carlos Sainz",team:"Williams",gap:"+21.454s",pts:10,fl:false},{pos:6,driver:"George Russell",team:"Mercedes",gap:"+28.1s",pts:8,fl:false}]},
-  { id:2, name:"GP d'Arabie Saoudite", circuit:"Jeddah", date:"9 Mars 2025", round:2, cat:"F1", flag:"🇸🇦", by:"Admin_OverTake", at:"Il y a 1j",
-    results:[{pos:1,driver:"Lewis Hamilton",team:"Ferrari",gap:"1:21:14.894",pts:25,fl:false},{pos:2,driver:"Max Verstappen",team:"Red Bull Racing",gap:"+2.119s",pts:18,fl:true},{pos:3,driver:"Oscar Piastri",team:"McLaren",gap:"+8.453s",pts:15,fl:false},{pos:4,driver:"Lando Norris",team:"McLaren",gap:"+12.2s",pts:12,fl:false},{pos:5,driver:"Charles Leclerc",team:"Ferrari",gap:"+19.8s",pts:10,fl:false}]},
-];
+const SEED_RACES = [];
 const SEED_POSTS = [
   { id:1, authorId:2, pseudo:"Max_Verstappen", av:"MV", color:"#3671C6", team:"Red Bull Racing", num:1, time:"2h", tag:"Race Day", tagColor:"#e8002d", text:"Victoire à Bahreïn ! 🏆 La voiture était parfaite. Merci à toute l'équipe ! 💪", image:null, likes:[3,4,5], comments:[{id:1,authorId:4,pseudo:"Lando_Norris",text:"Belle course ! 🧡",time:"1h"}], reported:false, mentions:[] },
   { id:2, authorId:3, pseudo:"Lewis_Hamilton", av:"LH", color:"#E8002D", team:"Ferrari", num:44, time:"5h", tag:"Victory", tagColor:"#ffd700", text:"Premier podium avec Ferrari ❤️ Ce moment... Forza Ferrari ! @Charles_Leclerc on continue comme ça !", image:null, likes:[2,4,5,6], comments:[], reported:false, mentions:[5] },
@@ -1004,6 +999,11 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
         const m=payload.new;
         setConvMessages(prev=>[...prev,{id:m.id,from:m.sender_id,text:m.content,time:new Date(m.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}]);
         setTimeout(()=>msgEndRef.current?.scrollIntoView({behavior:"smooth"}),50);
+        // Notif si message d'un autre
+        if(m.sender_id!==user.id){
+          const sender=users.find(x=>x.id===m.sender_id);
+          setNotifs(prev=>[{id:Date.now(),type:"message",from:sender?.pseudo||"?",text:"t'a envoyé un message",time:"maintenant",read:false,targetId:user.id},...prev]);
+        }
       })
       .subscribe();
     return()=>supabase.removeChannel(channel);
@@ -1060,7 +1060,10 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
             <button onClick={()=>setActiveConv(null)} style={{background:"none",border:"none",cursor:"pointer",color:t.accent,fontSize:14,fontWeight:700,display:"flex",alignItems:"center",gap:4,minHeight:44,minWidth:44}}>‹</button>
             {(()=>{const av=getAv(conv);return<Av src={av.src} letter={av.letter} color={av.color} size={34}/>;})()}
             <div style={{flex:1}}>
-              <div style={{fontWeight:800,color:t.text,fontSize:15}}>{getName(conv)}</div>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontWeight:800,color:t.text,fontSize:15}}>{getName(conv)}</span>
+                {conv.type==="dm"&&(()=>{const other=users.find(x=>x.id!==user.id&&conv.participants.includes(x.id));return other?<RolePill role={other.role} t={t}/>:null;})()}
+              </div>
               {conv.type==="group"&&<div style={{fontSize:11,color:t.muted}}>{conv.participants.length} membres</div>}
             </div>
           </div>
