@@ -1673,6 +1673,30 @@ export default function App() {
 
   const updateUser=u=>{setUser(u);setUsers(prev=>prev.map(x=>x.id===u.id?u:x));};
 
+  // Demander permission notifications push + enregistrer subscription
+  useEffect(()=>{
+    if(!user)return;
+    const registerPush=async()=>{
+      if(!("Notification" in window)||!("serviceWorker" in navigator))return;
+      const perm=await Notification.requestPermission();
+      if(perm!=="granted")return;
+      const reg=await navigator.serviceWorker.ready;
+      const existing=await reg.pushManager.getSubscription();
+      if(existing)return; // déjà abonné
+      try{
+        const sub=await reg.pushManager.subscribe({
+          userVisibleOnly:true,
+          applicationServerKey:import.meta.env.VITE_VAPID_PUBLIC_KEY
+        });
+        await supabase.from('push_subscriptions').upsert({
+          user_id:user.id,
+          subscription:JSON.stringify(sub)
+        });
+      }catch(e){console.log("Push subscription failed:",e);}
+    };
+    registerPush();
+  },[user?.id]);
+
   // Listener global pour notifications de nouveaux messages
   useEffect(()=>{
     if(!user)return;
