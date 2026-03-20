@@ -1588,6 +1588,39 @@ function AdminPage({ races, setRaces, posts, setPosts, anns, setAnns, t, user, s
 export default function App() {
   const[theme,setTheme]=useState("dark");
   const[user,setUser]=useState(null);
+  const[loading,setLoading]=useState(true);
+
+  // Restaurer la session Supabase au démarrage
+  useEffect(()=>{
+    supabase.auth.getSession().then(async({data:{session}})=>{
+      if(session){
+        const{data:profile}=await supabase.from('profiles').select('*').eq('id',session.user.id).single();
+        if(profile){
+          setUser({
+            id:session.user.id,
+            pseudo:profile.username,
+            password:"",
+            role:profile.role||"spectateur",
+            firstName:profile.display_name?.split(" ")[0]||"",
+            lastName:profile.display_name?.split(" ").slice(1).join(" ")||"",
+            num:profile.race_number||null,
+            team:profile.team||"Sans équipe",
+            nat:profile.nationality||"🇫🇷",
+            color:profile.color||AV_COLORS[0],
+            av:profile.username.slice(0,2).toUpperCase(),
+            bio:profile.bio||"",
+            joined:"2025",
+            avatar:profile.avatar_url||null,
+            banner:profile.banner_url||null
+          });
+        }
+      }
+      setLoading(false);
+    });
+    supabase.auth.onAuthStateChange((_event,session)=>{
+      if(!session)setUser(null);
+    });
+  },[]);
   const[users,setUsers]=useState([]);
   const[tab,setTab]=useState("home");
   const[drawer,setDrawer]=useState(false);
@@ -1639,6 +1672,7 @@ export default function App() {
     setTab("home");
   };
 
+  if(loading) return <div style={{height:"100dvh",background:"#09090f",display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{fontSize:32}}>🏎️</div></div>;
   if(!user) return <AuthScreen onLogin={u=>{setUser(u);setTab("home");}} t={t}/>;
 
   const pageContent = {
