@@ -777,9 +777,9 @@ function ResultsPage({ races, t }) {
 ═══════════════════════════════════════════════════════════ */
 function StandingsPage({ races, t }) {
   const[view,setView]=useState("wdc");
-  const wdcLeader=WDC[0].pts;
+  const wdcLeader=WDC.length>0?WDC[0].pts:1;
   const wcc=[...WCC].sort((a,b)=>b.pts-a.pts);
-  const wccLeader=wcc[0].pts;
+  const wccLeader=wcc.length>0?wcc[0].pts:1;
   return (
     <div>
       <TopBar title="Classements" t={t}/>
