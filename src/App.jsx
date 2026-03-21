@@ -447,7 +447,7 @@ function Drawer({ open, onClose, user, tab, setTab, theme, setTheme, unread, not
           <div style={{fontSize:10,fontWeight:800,color:t.sub,marginBottom:12,letterSpacing:"1.5px",textTransform:"uppercase"}}>THÈME</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
             {Object.entries(THEMES).map(([k,th])=>(
-              <button key={k} onClick={()=>setTheme(k)} style={{
+              <button key={k} onClick={()=>{setTheme(k);localStorage.setItem("ot_theme",k);}} style={{
                 padding:"10px 0",borderRadius:12,
                 border:`1.5px solid ${theme===k?th.accent:t.glassBorder}`,
                 background:theme===k?`linear-gradient(135deg,${th.accent}25,${th.accent}10)`:`${t.glass}`,
@@ -1798,7 +1798,7 @@ function AdminPage({ races, setRaces, posts, setPosts, anns, setAnns, t, user, s
    APP ROOT
 ═══════════════════════════════════════════════════════════ */
 export default function App() {
-  const[theme,setTheme]=useState("dark");
+  const[theme,setTheme]=useState(()=>localStorage.getItem("ot_theme")||"dark");
   const[user,setUser]=useState(null);
   const[loading,setLoading]=useState(true);
 
