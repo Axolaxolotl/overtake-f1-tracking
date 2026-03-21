@@ -3,139 +3,551 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="theme-color" content="#09090f"/>
-  <meta name="description" content="OverTake — La plateforme F1/F2 de ta communauté."/>
+  <meta name="theme-color" content="#06060c"/>
+  <meta name="description" content="OverTake — La plateforme F1/F2 de ta communauté. Résultats, classements, réseau pilotes."/>
   <link rel="icon" href="/icon-192x192.png"/>
-  <title>OverTake F1 Tracking — Télécharger</title>
+  <title>OverTake F1 Tracking</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,900;1,900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    :root{--red:#e8002d;--red2:#ff3344;--bg:#06060c;--bg2:#0c0c18;--card:#10101e;--border:#1e1e32;--text:#f0f0fa;--muted:#44445a;--sub:#6666aa;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;}
+    :root {
+      --red: #e8002d;
+      --red2: #ff3344;
+      --red3: #ff6633;
+      --bg: #05050b;
+      --bg2: #0a0a14;
+      --card: rgba(14,14,22,0.95);
+      --border: rgba(255,255,255,0.07);
+      --text: #f0f0fa;
+      --muted: #3a3a55;
+      --sub: #6666aa;
+      --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    .topbar{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--red2),var(--red));z-index:100;}
+    /* RACING LINE TOP */
+    .racing-line {
+      position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 999;
+      background: linear-gradient(90deg, transparent 0%, var(--red) 20%, var(--red2) 50%, var(--red3) 80%, transparent 100%);
+      animation: lineShift 3s ease-in-out infinite;
+    }
+    @keyframes lineShift {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; box-shadow: 0 0 20px var(--red); }
+    }
 
-    /* Speed lines */
-    .speedlines{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
-    .speedline{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(232,0,45,0.35),transparent);animation:speed linear infinite;opacity:0;}
-    @keyframes speed{0%{transform:translateX(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(200vw);opacity:0}}
+    /* AMBIENT PARTICLES */
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .particle {
+      position: absolute; width: 1px; height: 80px;
+      background: linear-gradient(180deg, transparent, rgba(232,0,45,0.4), transparent);
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-100px) rotate(15deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(15deg); opacity: 0; }
+    }
 
     /* HERO */
-    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:60px 20px 80px;text-align:center;overflow:hidden;}
-    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 900px 500px at 50% -100px,rgba(232,0,45,0.15),transparent);pointer-events:none;}
-    .hero-grid{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 120px,rgba(232,0,45,0.025) 120px,rgba(232,0,45,0.025) 121px),repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(255,255,255,0.012) 80px,rgba(255,255,255,0.012) 81px);pointer-events:none;}
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 80px 24px 100px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; filter: blur(80px);
+      pointer-events: none; animation: orbPulse 6s ease-in-out infinite;
+    }
+    .orb1 { width: 600px; height: 400px; background: radial-gradient(circle, rgba(232,0,45,0.12) 0%, transparent 70%); top: -100px; left: 50%; transform: translateX(-50%); }
+    .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,100,50,0.06) 0%, transparent 70%); bottom: 0; right: -100px; animation-delay: -3s; }
+    @keyframes orbPulse { 0%,100%{opacity:0.6;transform:translateX(-50%) scale(1)} 50%{opacity:1;transform:translateX(-50%) scale(1.05)} }
 
-    .badge{display:inline-flex;align-items:center;gap:7px;background:rgba(232,0,45,0.1);border:1px solid rgba(232,0,45,0.28);border-radius:30px;padding:6px 16px;font-size:11px;font-weight:700;color:var(--red);letter-spacing:2px;margin-bottom:28px;position:relative;z-index:2;animation:up 0.7s 0.1s both;}
-    .bdot{width:7px;height:7px;background:var(--red);border-radius:50%;animation:pulse 2s infinite;}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        repeating-linear-gradient(90deg, transparent, transparent 99px, rgba(255,255,255,0.02) 99px, rgba(255,255,255,0.02) 100px),
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.015) 79px, rgba(255,255,255,0.015) 80px);
+    }
 
-    .logo-wrap{position:relative;z-index:2;margin-bottom:28px;animation:up 0.7s both;}
-    .logo-box{width:108px;height:108px;border-radius:28px;background:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;overflow:hidden;box-shadow:0 0 60px rgba(232,0,45,0.5),0 20px 60px rgba(0,0,0,0.8);}
-    .logo-box img{width:88%;height:88%;object-fit:contain;}
-    .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(56px,13vw,100px);font-weight:900;font-style:italic;letter-spacing:-2px;line-height:0.88;color:var(--text);}
-    .brand span{color:var(--red);}
-    .subtitle{font-family:'Barlow Condensed',sans-serif;font-size:clamp(11px,2.5vw,15px);letter-spacing:7px;font-weight:700;color:var(--sub);margin-top:6px;}
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(232,0,45,0.08);
+      border: 1px solid rgba(232,0,45,0.22);
+      border-radius: 40px; padding: 7px 18px;
+      font-size: 10px; font-weight: 700; color: var(--red);
+      letter-spacing: 2.5px; margin-bottom: 32px;
+      position: relative; z-index: 2;
+      animation: fadeUp 0.8s 0.1s both;
+      backdrop-filter: blur(8px);
+    }
+    .bdot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; box-shadow: 0 0 8px var(--red); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;box-shadow:0 0 8px var(--red)} 50%{opacity:0.3;box-shadow:none} }
 
-    .tagline{position:relative;z-index:2;font-size:clamp(15px,3.5vw,20px);color:var(--sub);max-width:480px;line-height:1.65;margin-bottom:44px;animation:up 0.7s 0.25s both;}
-    .tagline strong{color:var(--text);}
+    .logo-wrap { position: relative; z-index: 2; margin-bottom: 32px; animation: fadeUp 0.8s both; }
+    .logo-box {
+      width: 120px; height: 120px; border-radius: 30px;
+      background: #fff; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; overflow: hidden;
+      box-shadow: 0 0 80px rgba(232,0,45,0.5), 0 24px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.2);
+      animation: logoFloat 4s ease-in-out infinite;
+    }
+    @keyframes logoFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .logo-box img { width: 86%; height: 86%; object-fit: contain; }
+    .brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(60px, 14vw, 110px);
+      font-weight: 900; font-style: italic;
+      letter-spacing: -3px; line-height: 0.85; color: var(--text);
+      text-shadow: 0 0 60px rgba(232,0,45,0.2);
+    }
+    .brand em { color: var(--red); font-style: inherit; }
+    .subtitle {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(11px, 2.5vw, 14px);
+      letter-spacing: 8px; font-weight: 700;
+      color: var(--sub); margin-top: 8px;
+    }
 
-    .tires{position:relative;z-index:2;display:flex;justify-content:center;gap:14px;margin-bottom:36px;animation:up 0.7s 0.3s both;}
+    .tagline {
+      position: relative; z-index: 2;
+      font-size: clamp(15px, 3.5vw, 19px);
+      color: var(--sub); max-width: 500px;
+      line-height: 1.7; margin-bottom: 48px;
+      animation: fadeUp 0.8s 0.2s both;
+    }
+    .tagline strong { color: var(--text); font-weight: 600; }
 
-    .ctas{position:relative;z-index:2;display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;animation:up 0.7s 0.4s both;}
+    .tires {
+      position: relative; z-index: 2;
+      display: flex; justify-content: center; gap: 16px;
+      margin-bottom: 40px;
+      animation: fadeUp 0.8s 0.3s both;
+    }
+    .tire-wrap { animation: spinTire 3s linear infinite; }
+    .tire-wrap:nth-child(2) { animation-delay: -1s; }
+    .tire-wrap:nth-child(3) { animation-delay: -2s; }
+    @keyframes spinTire { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
-    .btn-dl{display:flex;align-items:center;justify-content:center;gap:11px;padding:18px 26px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border:none;border-radius:16px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;font-style:italic;cursor:pointer;text-decoration:none;box-shadow:0 8px 40px rgba(232,0,45,0.5);transition:transform .15s,box-shadow .15s;}
-    .btn-dl:hover{transform:translateY(-2px);box-shadow:0 14px 50px rgba(232,0,45,0.6);}
-    .btn-app{display:flex;align-items:center;justify-content:center;gap:10px;padding:15px 26px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:16px;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;font-style:italic;cursor:pointer;text-decoration:none;transition:transform .15s,border-color .15s;}
-    .btn-app:hover{transform:translateY(-2px);border-color:var(--sub);}
-    .btn-guide{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 26px;background:transparent;color:var(--sub);border:1px solid var(--border);border-radius:16px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:color .15s,border-color .15s;}
-    .btn-guide:hover{color:var(--text);border-color:var(--sub);}
+    .ctas {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column;
+      gap: 12px; width: 100%; max-width: 380px;
+      animation: fadeUp 0.8s 0.4s both;
+    }
+    .btn-primary {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 19px 28px;
+      background: linear-gradient(135deg, var(--red) 0%, var(--red2) 50%, var(--red3) 100%);
+      color: #fff; border: none; border-radius: 18px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 21px; font-weight: 900; font-style: italic;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 8px 40px rgba(232,0,45,0.5), 0 2px 0 rgba(255,255,255,0.1) inset;
+      transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 16px 56px rgba(232,0,45,0.65); }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary:active { transform: translateY(0) scale(0.98); }
 
-    .scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:10px;letter-spacing:2.5px;animation:up 1s 1.2s both;z-index:2;}
-    .arrow{width:18px;height:18px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);animation:bounce 1.5s ease infinite;}
-    @keyframes bounce{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(5px)}}
+    .btn-secondary {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 16px 28px;
+      background: var(--glass); color: var(--text);
+      border: 1px solid var(--glass-border); border-radius: 18px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px; font-weight: 700; font-style: italic;
+      cursor: pointer; text-decoration: none;
+      backdrop-filter: blur(16px);
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); transform: translateY(-2px); }
+
+    .btn-ghost {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 28px;
+      background: transparent; color: var(--sub);
+      border: 1px solid rgba(255,255,255,0.05); border-radius: 18px;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--glass-border); }
+
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 9px; letter-spacing: 3px;
+      animation: fadeUp 1s 1.5s both; z-index: 2; text-transform: uppercase;
+    }
+    .arrow { width: 16px; height: 16px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg); animation: bounce 1.8s ease infinite; }
+    @keyframes bounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(6px)} }
+
+    /* STATS */
+    .stats {
+      position: relative; z-index: 2;
+      display: flex; gap: 32px; justify-content: center;
+      margin-bottom: 48px; flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.35s both;
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 36px; font-weight: 900; font-style: italic;
+      background: linear-gradient(135deg, var(--text), var(--sub));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-l { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+    .stat-div { width: 1px; background: var(--border); align-self: stretch; }
+
+    /* SECTIONS */
+    .section { padding: 100px 24px; max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+    .section-label {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 10px; font-weight: 800; color: var(--red);
+      letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;
+      justify-content: center;
+    }
+    .section-label::before, .section-label::after {
+      content: ''; flex: 1; max-width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--red));
+    }
+    .section-label::after { background: linear-gradient(90deg, var(--red), transparent); }
+    .stitle {
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(32px, 7vw, 56px);
+      font-weight: 900; font-style: italic;
+      margin-bottom: 12px; line-height: 1;
+    }
+    .stitle em { color: var(--red); font-style: inherit; }
+    .ssub { text-align: center; color: var(--sub); font-size: 15px; margin-bottom: 56px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; }
 
     /* FEATURES */
-    .section{padding:80px 20px;max-width:980px;margin:0 auto;position:relative;z-index:1;}
-    .divider{width:50px;height:3px;background:linear-gradient(90deg,var(--red),var(--red2));border-radius:2px;margin:0 auto 18px;}
-    .stitle{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:clamp(30px,7vw,52px);font-weight:900;font-style:italic;margin-bottom:8px;}
-    .stitle span{color:var(--red);}
-    .ssub{text-align:center;color:var(--sub);font-size:15px;margin-bottom:48px;}
-
-    .grid-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;}
-    .feat{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;transition:transform .2s,border-color .2s;}
-    .feat:hover{transform:translateY(-4px);border-color:rgba(232,0,45,0.25);}
-    .feat-i{width:48px;height:48px;background:rgba(232,0,45,0.1);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;}
-    .feat-t{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;font-style:italic;color:var(--text);margin-bottom:7px;}
-    .feat-d{color:var(--sub);font-size:13px;line-height:1.65;}
+    .grid-feats { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .feat {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px; padding: 26px;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      position: relative; overflow: hidden;
+    }
+    .feat::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(232,0,45,0.04) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .feat:hover { transform: translateY(-6px); border-color: rgba(232,0,45,0.2); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(232,0,45,0.08); }
+    .feat:hover::before { opacity: 1; }
+    .feat-i {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, rgba(232,0,45,0.15), rgba(232,0,45,0.05));
+      border: 1px solid rgba(232,0,45,0.2);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(232,0,45,0.15);
+    }
+    .feat-t {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px; font-weight: 900; font-style: italic;
+      color: var(--text); margin-bottom: 8px;
+    }
+    .feat-d { color: var(--sub); font-size: 13px; line-height: 1.7; }
 
     /* INSTALL */
-    .install-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-    @media(max-width:580px){.install-grid{grid-template-columns:1fr;}}
+    .install-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width: 600px) { .install-grid { grid-template-columns: 1fr; } }
+    .icard {
+      background: var(--card); border: 1px solid var(--glass-border);
+      border-radius: 26px; padding: 28px 24px;
+      backdrop-filter: blur(16px); position: relative; overflow: hidden;
+    }
+    .icard.and { border-color: rgba(232,0,45,0.2); box-shadow: 0 0 60px rgba(232,0,45,0.06); }
+    .icard-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+    .icard.and .icard-accent { background: linear-gradient(90deg, var(--red), var(--red2), var(--red3)); }
+    .icard.ios .icard-accent { background: linear-gradient(90deg, #555, #888); }
+    .ios-tag { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--sub); margin-bottom: 8px; text-transform: uppercase; }
+    .ititle {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px; font-weight: 900; font-style: italic;
+      color: var(--text); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .steps { list-style: none; margin-bottom: 24px; }
+    .steps li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px; color: var(--sub); line-height: 1.6;
+    }
+    .steps li:last-child { border: none; }
+    .snum {
+      width: 24px; height: 24px; flex-shrink: 0;
+      background: rgba(232,0,45,0.1); border: 1px solid rgba(232,0,45,0.25);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; color: var(--red); margin-top: 1px;
+    }
+    .icard.ios .snum { background: rgba(120,120,120,0.1); border-color: rgba(120,120,120,0.2); color: #888; }
+    code { background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 5px; font-size: 11px; border: 1px solid var(--border); }
 
-    .icard{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:26px 22px;position:relative;overflow:hidden;}
-    .icard.and{border-color:rgba(232,0,45,0.35);box-shadow:0 0 40px rgba(232,0,45,0.08);}
-    .icard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-    .icard.and::before{background:linear-gradient(90deg,var(--red),var(--red2));}
-    .icard.ios::before{background:linear-gradient(90deg,#444,#888);}
+    /* FOOTER */
+    footer {
+      padding: 40px 24px; text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 13px;
+      position: relative; z-index: 1;
+    }
+    footer a { color: var(--red); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px; font-weight: 900; font-style: italic;
+      margin-bottom: 8px;
+    }
+    .footer-brand em { color: var(--red); font-style: inherit; }
 
-    .ios-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2.5px;color:var(--sub);margin-bottom:7px;}
-    .ititle{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;font-style:italic;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:9px;}
-    .steps{list-style:none;margin-bottom:22px;}
-    .steps li{display:flex;align-items:flex-start;gap:11px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--sub);line-height:1.55;}
-    .steps li:last-child{border:none;}
-    .snum{width:22px;height:22px;background:rgba(232,0,45,0.12);border:1px solid rgba(232,0,45,0.28);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--red);flex-shrink:0;margin-top:1px;}
-    .icard.ios .snum{background:rgba(120,120,120,0.1);border-color:rgba(120,120,120,0.25);color:#888;}
-    code{background:var(--bg2);padding:1px 6px;border-radius:4px;font-size:11px;}
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 
-    footer{padding:36px 20px;text-align:center;border-top:1px solid var(--border);color:var(--muted);font-size:13px;position:relative;z-index:1;}
-    footer a{color:var(--red);text-decoration:none;}
-    footer a:hover{text-decoration:underline;}
-
-    @keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    /* SCROLL REVEAL */
+    .reveal { opacity: 0; transform: translateY(32px); transition: all 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
   </style>
 </head>
 <body>
 
-<div class="topbar"></div>
-<div class="speedlines" id="sl"></div>
+<div class="racing-line"></div>
+<div class="particles" id="particles"></div>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
   <div class="hero-grid"></div>
 
   <div class="badge"><div class="bdot"></div>SAISON 2025 EN COURS</div>
 
   <div class="logo-wrap">
     <div class="logo-box">
-      <img src="/logo.png" alt="OverTake" onerror="this.parentElement.innerHTML='<span style=font-size:44px>🏎️</span>'"/>
+      <img src="/logo.png" alt="OverTake" onerror="this.parentElement.innerHTML='<span style=font-size:48px>🏎️</span>'"/>
     </div>
-    <div class="brand"><span>Over</span>Take</div>
+    <div class="brand"><em>Over</em>Take</div>
     <div class="subtitle">F1 TRACKING</div>
   </div>
 
-  <p class="tagline">La plateforme <strong>F1 & F2</strong> de ta communauté.<br/>Résultats, classements, réseau pilotes.</p>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-n">F1</div>
+      <div class="stat-l">Formule 1</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat">
+      <div class="stat-n">F2</div>
+      <div class="stat-l">Formule 2</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat">
+      <div class="stat-n">RP</div>
+      <div class="stat-l">Roleplay</div>
+    </div>
+  </div>
+
+  <p class="tagline">La plateforme <strong>F1 & F2</strong> de ta communauté.<br/>Résultats, classements, réseau pilotes en temps réel.</p>
 
   <div class="tires">
-    <svg width="30" height="30" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#111" stroke="#333" stroke-width="1.5"/><circle cx="16" cy="16" r="8" fill="#1a1a1a"/><circle cx="16" cy="16" r="5" fill="#e8002d"/></svg>
-    <svg width="30" height="30" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#111" stroke="#333" stroke-width="1.5"/><circle cx="16" cy="16" r="8" fill="#1a1a1a"/><circle cx="16" cy="16" r="5" fill="#ffd700"/></svg>
-    <svg width="30" height="30" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#111" stroke="#333" stroke-width="1.5"/><circle cx="16" cy="16" r="8" fill="#1a1a1a"/><circle cx="16" cy="16" r="5" fill="#f0f0f0"/></svg>
+    <div class="tire-wrap">
+      <svg width="28" height="28" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#111" stroke="#2a2a2a" stroke-width="1.5"/><circle cx="16" cy="16" r="8" fill="#1a1a1a"/><circle cx="16" cy="16" r="5" fill="#e8002d"/></svg>
+    </div>
+    <div class="tire-wrap">
+      <svg width="28" height="28" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#111" stroke="#2a2a2a" stroke-width="1.5"/><circle cx="16" cy="16" r="8" fill="#1a1a1a"/><circle cx="16" cy="16" r="5" fill="#ffd700"/></svg>
+    </div>
+    <div class="tire-wrap">
+      <svg width="28" height="28" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#111" stroke="#2a2a2a" stroke-width="1.5"/><circle cx="16" cy="16" r="8" fill="#1a1a1a"/><circle cx="16" cy="16" r="5" fill="#eeeeee"/></svg>
+    </div>
   </div>
 
   <div class="ctas">
-    <a href="https://github.com/Axolaxolotl/overtake-f1-tracking/releases/download/1.0.1/OverTake.apk" class="btn-dl" id="apk-btn">
+    <a href="https://github.com/Axolaxolotl/overtake-f1-tracking/releases/download/1.0.1/OverTake.apk" class="btn-primary" id="apk-btn">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Télécharger APK Android
     </a>
-    <a href="/app/" class="btn-app">
+    <a href="/app/" class="btn-secondary">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       Ouvrir dans le navigateur
     </a>
-    <a href="#install" class="btn-guide">📱 Guide d'installation iOS & Android</a>
+    <a href="#install" class="btn-ghost">📱 Guide d'installation iOS & Android</a>
   </div>
+
+  <div class="scroll-hint">
+    <span>Découvrir</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">Fonctionnalités</div>
+  <h2 class="stitle reveal">Tout ce dont tu as <em>besoin</em></h2>
+  <p class="ssub reveal reveal-delay-1">Une application complète pour vivre la saison F1 avec ta communauté.</p>
+
+  <div class="grid-feats">
+    <div class="feat reveal reveal-delay-1">
+      <div class="feat-i">🏁</div>
+      <div class="feat-t">Résultats en direct</div>
+      <div class="feat-d">Résultats de chaque course publiés par les admins. WDC & WCC mis à jour en temps réel.</div>
+    </div>
+    <div class="feat reveal reveal-delay-2">
+      <div class="feat-i">📸</div>
+      <div class="feat-t">Réseau Pilotes</div>
+      <div class="feat-d">Publications, likes, commentaires et mentions. Un réseau social dédié à la communauté F1.</div>
+    </div>
+    <div class="feat reveal reveal-delay-3">
+      <div class="feat-i">💬</div>
+      <div class="feat-t">Messages privés</div>
+      <div class="feat-d">DMs et groupes en temps réel via Supabase. Notifications push instantanées.</div>
+    </div>
+    <div class="feat reveal reveal-delay-4">
+      <div class="feat-i">🎭</div>
+      <div class="feat-t">Roleplay F1</div>
+      <div class="feat-d">Crée ton pilote, choisis ton écurie, ton numéro et ta nationalité. Vis la saison en RP.</div>
+    </div>
+    <div class="feat reveal reveal-delay-1">
+      <div class="feat-i">📢</div>
+      <div class="feat-t">Annonces officielles</div>
+      <div class="feat-d">Annonces épinglées des admins. Notifications push pour ne rien manquer.</div>
+    </div>
+    <div class="feat reveal reveal-delay-2">
+      <div class="feat-i">🎨</div>
+      <div class="feat-t">7 thèmes</div>
+      <div class="feat-d">Dark, Light, Midnight, Sakura, Violet, Sunset, Ice. Interface glassmorphism premium.</div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section class="section" id="install">
+  <div class="section-label">Installation</div>
+  <h2 class="stitle reveal">Installer <em>OverTake</em></h2>
+  <p class="ssub reveal reveal-delay-1">Disponible sur Android via APK, ou directement dans ton navigateur.</p>
+
+  <div class="install-grid">
+    <div class="icard and reveal reveal-delay-1">
+      <div class="icard-accent"></div>
+      <div class="ios-tag">Recommandé</div>
+      <div class="ititle">🤖 Android APK</div>
+      <ul class="steps">
+        <li>
+          <div class="snum">1</div>
+          <span>Télécharge le fichier <code>OverTake.apk</code> via le bouton ci-dessus</span>
+        </li>
+        <li>
+          <div class="snum">2</div>
+          <span>Active <strong>Sources inconnues</strong> dans Paramètres → Sécurité si demandé</span>
+        </li>
+        <li>
+          <div class="snum">3</div>
+          <span>Lance l'installation et profite de l'app native !</span>
+        </li>
+      </ul>
+      <a href="https://github.com/Axolaxolotl/overtake-f1-tracking/releases/download/1.0.1/OverTake.apk" class="btn-primary" style="font-size:17px;padding:15px 22px;border-radius:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger l'APK
+      </a>
+    </div>
+
+    <div class="icard ios reveal reveal-delay-2">
+      <div class="icard-accent"></div>
+      <div class="ios-tag">iOS / Safari</div>
+      <div class="ititle">🍎 iPhone & iPad</div>
+      <ul class="steps">
+        <li>
+          <div class="snum">1</div>
+          <span>Ouvre <a href="/app/" style="color:var(--red)">overtake.vercel.app/app/</a> dans <strong>Safari</strong></span>
+        </li>
+        <li>
+          <div class="snum">2</div>
+          <span>Appuie sur le bouton <strong>Partager</strong> (carré avec flèche vers le haut)</span>
+        </li>
+        <li>
+          <div class="snum">3</div>
+          <span>Sélectionne <strong>"Sur l'écran d'accueil"</strong> puis Ajouter</span>
+        </li>
+        <li>
+          <div class="snum">4</div>
+          <span>L'app s'ouvre comme une app native, sans barre Safari !</span>
+        </li>
+      </ul>
+      <a href="/app/" class="btn-secondary" style="border-radius:14px;font-size:17px;padding:15px 22px;">
+        Ouvrir dans Safari →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand"><em>Over</em>Take</div>
+  <p style="margin-bottom:8px;font-size:12px;">La plateforme F1 & F2 de ta communauté</p>
+  <p>Made with ❤️ · <a href="/app/">Ouvrir l'app</a> · <a href="https://github.com/Axolaxolotl/overtake-f1-tracking">GitHub</a></p>
+</footer>
+
+<script>
+  // Particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      animation-duration: ${6 + Math.random() * 8}s;
+      animation-delay: ${-Math.random() * 10}s;
+      height: ${40 + Math.random() * 80}px;
+      opacity: ${0.3 + Math.random() * 0.4};
+    `;
+    container.appendChild(p);
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // APK version check
+  const apkUrl = 'https://github.com/Axolaxolotl/overtake-f1-tracking/releases/latest';
+  document.querySelectorAll('#apk-btn, a[href*="OverTake.apk"]').forEach(btn => {
+    if (navigator.userAgent.includes('Android')) {
+      btn.style.animation = 'glowPulse 2s ease infinite';
+    }
+  });
+</script>
+</body>
+</html>
 
   <div class="scroll-hint"><span>DÉCOUVRIR</span><div class="arrow"></div></div>
 </section>
@@ -171,7 +583,7 @@
         <li><div class="snum">3</div><span>Si demandé : <strong style="color:var(--text)">Paramètres → Sources inconnues → Autoriser</strong></span></li>
         <li><div class="snum">4</div><span>Appuie <strong style="color:var(--text)">"Installer"</strong> → l'icône apparaît sur l'écran d'accueil 🎉</span></li>
       </ul>
-      <a href="https://github.com/Axolaxolotl/overtake-f1-tracking/releases/download/1.0.1/OverTake.apk" class="btn-dl" style="font-size:17px;padding:14px 20px;">⬇️ Télécharger APK</a>
+      <a href="https://github.com/Axolaxolotl/overtake-f1-tracking/releases/download/1.0.0/OverTake.apk" class="btn-dl" style="font-size:17px;padding:14px 20px;">⬇️ Télécharger APK</a>
     </div>
 
     <div class="icard ios">
