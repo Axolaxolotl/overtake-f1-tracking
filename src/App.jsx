@@ -2,6 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 
 /* ═══════════════════════════════════════════════════════════
+   PUSH NOTIFICATIONS
+═══════════════════════════════════════════════════════════ */
+async function sendPush(userId, title, body) {
+  try {
+    await fetch("https://zrgwhgoqcyvifzezmkzs.supabase.co/functions/v1/send-push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ user_id: userId, title, body })
+    });
+  } catch(e) { console.log("Push failed:", e); }
+}
+
+/* ═══════════════════════════════════════════════════════════
    THEMES
 ═══════════════════════════════════════════════════════════ */
 const THEMES = {
@@ -796,7 +809,10 @@ function SocialPage({ posts, setPosts, user, users, t, setNotifs, setTab, setVie
       await supabase.from('likes').delete().eq('post_id',id).eq('user_id',user.id);
     } else {
       await supabase.from('likes').insert({post_id:id,user_id:user.id});
-      if(post.authorId!==user.id)setNotifs(prev=>[{id:Date.now(),type:"like",from:user.pseudo,text:"a aimé ta publication",time:"maintenant",read:false,targetId:post.authorId},...prev]);
+      if(post.authorId!==user.id){
+        setNotifs(prev=>[{id:Date.now(),type:"like",from:user.pseudo,text:"a aimé ta publication",time:"maintenant",read:false,targetId:post.authorId},...prev]);
+        sendPush(post.authorId, `❤️ ${user.pseudo}`, "a aimé ta publication");
+      }
     }
     setPosts(posts.map(p=>p.id===id?{...p,likes:has?p.likes.filter(x=>x!==user.id):[...p.likes,user.id]}:p));
   };
@@ -1058,6 +1074,13 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
     setNewMsg("");
     await supabase.from('messages').insert({conversation_id:activeConv,sender_id:user.id,content:txt});
     setTimeout(()=>msgEndRef.current?.scrollIntoView({behavior:"smooth"}),50);
+    // Envoyer push aux autres participants
+    const conv=messages.find(c=>c.id===activeConv);
+    if(conv){
+      conv.participants.filter(id=>id!==user.id).forEach(id=>{
+        sendPush(id, `💬 ${user.pseudo}`, txt.slice(0,100));
+      });
+    }
   };
   const createDM=async uid=>{
     const ex=messages.find(c=>c.type==="dm"&&c.participants.includes(user.id)&&c.participants.includes(uid));
