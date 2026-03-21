@@ -20,39 +20,122 @@ async function sendPush(userId, title, body) {
 const THEMES = {
   dark: {
     name:"Dark", icon:"🌑",
-    bg:"#09090f", card:"#111118", el:"#18181f", inp:"#1e1e28",
-    border:"#26263a", bFocus:"#e8002d",
-    text:"#f0f0f8", muted:"#44445a", sub:"#7777aa",
-    accent:"#e8002d", aSoft:"rgba(232,0,45,0.12)",
+    bg:"#08080e", card:"rgba(18,18,26,0.95)", el:"rgba(24,24,34,0.9)", inp:"rgba(20,20,30,0.8)",
+    border:"rgba(255,255,255,0.07)", bFocus:"#e8002d",
+    text:"#f0f0f8", muted:"#55556a", sub:"#8888aa",
+    accent:"#e8002d", aSoft:"rgba(232,0,45,0.15)",
     gold:"#ffd700", silver:"#aaaacc", bronze:"#c07840",
-    grad:"linear-gradient(135deg,#e8002d 0%,#ff5533 100%)",
-    glow:"0 0 32px rgba(232,0,45,0.3)",
-    shadow:"0 8px 40px rgba(0,0,0,0.7)",
-    nav:"rgba(9,9,15,0.98)",
+    grad:"linear-gradient(135deg,#e8002d 0%,#ff4422 50%,#ff6633 100%)",
+    gradSoft:"linear-gradient(135deg,rgba(232,0,45,0.15) 0%,rgba(255,85,51,0.08) 100%)",
+    glow:"0 0 40px rgba(232,0,45,0.35)",
+    glowSoft:"0 4px 24px rgba(232,0,45,0.15)",
+    shadow:"0 8px 40px rgba(0,0,0,0.8)",
+    shadowCard:"0 4px 32px rgba(0,0,0,0.6)",
+    nav:"rgba(8,8,14,0.85)",
+    glass:"rgba(255,255,255,0.04)",
+    glassBorder:"rgba(255,255,255,0.08)",
   },
   light: {
     name:"Light", icon:"☀️",
-    bg:"#f2f2f8", card:"#ffffff", el:"#f0f0f8", inp:"#e8e8f4",
-    border:"#d0d0e8", bFocus:"#e8002d",
-    text:"#080818", muted:"#9898b8", sub:"#555578",
+    bg:"#f0f0f8", card:"rgba(255,255,255,0.92)", el:"rgba(245,245,252,0.9)", inp:"rgba(235,235,248,0.9)",
+    border:"rgba(0,0,0,0.07)", bFocus:"#e8002d",
+    text:"#080818", muted:"#aaaacc", sub:"#666688",
     accent:"#e8002d", aSoft:"rgba(232,0,45,0.08)",
-    gold:"#aa8800", silver:"#666688", bronze:"#9a5830",
-    grad:"linear-gradient(135deg,#e8002d 0%,#ff5533 100%)",
-    glow:"0 0 32px rgba(232,0,45,0.15)",
+    gold:"#cc9900", silver:"#777799", bronze:"#9a5830",
+    grad:"linear-gradient(135deg,#e8002d 0%,#ff4422 50%,#ff6633 100%)",
+    gradSoft:"linear-gradient(135deg,rgba(232,0,45,0.1) 0%,rgba(255,85,51,0.05) 100%)",
+    glow:"0 0 30px rgba(232,0,45,0.25)",
+    glowSoft:"0 4px 20px rgba(232,0,45,0.12)",
     shadow:"0 8px 40px rgba(0,0,0,0.12)",
-    nav:"rgba(255,255,255,0.98)",
+    shadowCard:"0 4px 24px rgba(0,0,0,0.08)",
+    nav:"rgba(240,240,248,0.85)",
+    glass:"rgba(255,255,255,0.6)",
+    glassBorder:"rgba(0,0,0,0.06)",
   },
   midnight: {
     name:"Midnight", icon:"🌌",
-    bg:"#03050f", card:"#07091a", el:"#0c0f28", inp:"#0a0d22",
-    border:"#111530", bFocus:"#4d88ff",
-    text:"#d8e4ff", muted:"#303870", sub:"#5566aa",
+    bg:"#020310", card:"rgba(5,7,24,0.95)", el:"rgba(8,12,32,0.9)", inp:"rgba(6,10,28,0.8)",
+    border:"rgba(77,136,255,0.1)", bFocus:"#4d88ff",
+    text:"#d8e4ff", muted:"#2a3560", sub:"#4a5a99",
     accent:"#4d88ff", aSoft:"rgba(77,136,255,0.12)",
     gold:"#ffd700", silver:"#8899cc", bronze:"#667799",
-    grad:"linear-gradient(135deg,#4d88ff 0%,#00ddff 100%)",
-    glow:"0 0 32px rgba(77,136,255,0.3)",
-    shadow:"0 8px 40px rgba(0,0,0,0.7)",
-    nav:"rgba(3,5,15,0.98)",
+    grad:"linear-gradient(135deg,#4d88ff 0%,#2255dd 50%,#00ccff 100%)",
+    gradSoft:"linear-gradient(135deg,rgba(77,136,255,0.15) 0%,rgba(0,204,255,0.08) 100%)",
+    glow:"0 0 40px rgba(77,136,255,0.4)",
+    glowSoft:"0 4px 24px rgba(77,136,255,0.15)",
+    shadow:"0 8px 40px rgba(0,0,0,0.8)",
+    shadowCard:"0 4px 32px rgba(0,0,0,0.6)",
+    nav:"rgba(2,3,16,0.85)",
+    glass:"rgba(77,136,255,0.04)",
+    glassBorder:"rgba(77,136,255,0.1)",
+  },
+  sakura: {
+    name:"Sakura", icon:"🌸",
+    bg:"#0f080e", card:"rgba(28,14,22,0.95)", el:"rgba(36,16,28,0.9)", inp:"rgba(30,12,22,0.8)",
+    border:"rgba(255,100,180,0.1)", bFocus:"#ff69b4",
+    text:"#ffe0f0", muted:"#552244", sub:"#aa6688",
+    accent:"#ff69b4", aSoft:"rgba(255,105,180,0.15)",
+    gold:"#ffd700", silver:"#cc88aa", bronze:"#aa5566",
+    grad:"linear-gradient(135deg,#ff69b4 0%,#ff1493 50%,#c71585 100%)",
+    gradSoft:"linear-gradient(135deg,rgba(255,105,180,0.15) 0%,rgba(199,21,133,0.08) 100%)",
+    glow:"0 0 40px rgba(255,105,180,0.4)",
+    glowSoft:"0 4px 24px rgba(255,105,180,0.15)",
+    shadow:"0 8px 40px rgba(0,0,0,0.8)",
+    shadowCard:"0 4px 32px rgba(0,0,0,0.6)",
+    nav:"rgba(15,8,14,0.85)",
+    glass:"rgba(255,105,180,0.04)",
+    glassBorder:"rgba(255,105,180,0.1)",
+  },
+  violet: {
+    name:"Violet", icon:"⚡",
+    bg:"#06020f", card:"rgba(14,6,24,0.95)", el:"rgba(20,8,32,0.9)", inp:"rgba(16,6,28,0.8)",
+    border:"rgba(160,32,255,0.12)", bFocus:"#a020ff",
+    text:"#f0e0ff", muted:"#442266", sub:"#9944cc",
+    accent:"#a020ff", aSoft:"rgba(160,32,255,0.15)",
+    gold:"#ffd700", silver:"#aa88dd", bronze:"#886699",
+    grad:"linear-gradient(135deg,#a020ff 0%,#7700cc 50%,#00ffcc 100%)",
+    gradSoft:"linear-gradient(135deg,rgba(160,32,255,0.15) 0%,rgba(0,255,204,0.08) 100%)",
+    glow:"0 0 40px rgba(160,32,255,0.5)",
+    glowSoft:"0 4px 24px rgba(160,32,255,0.2)",
+    shadow:"0 8px 40px rgba(0,0,0,0.8)",
+    shadowCard:"0 4px 32px rgba(0,0,0,0.6)",
+    nav:"rgba(6,2,15,0.85)",
+    glass:"rgba(160,32,255,0.05)",
+    glassBorder:"rgba(160,32,255,0.12)",
+  },
+  sunset: {
+    name:"Sunset", icon:"🌅",
+    bg:"#0e0600", card:"rgba(24,12,4,0.95)", el:"rgba(32,16,4,0.9)", inp:"rgba(28,12,4,0.8)",
+    border:"rgba(255,120,0,0.1)", bFocus:"#ff7700",
+    text:"#fff0e0", muted:"#553310", sub:"#cc7733",
+    accent:"#ff7700", aSoft:"rgba(255,119,0,0.15)",
+    gold:"#ffdd00", silver:"#ccaa66", bronze:"#aa6633",
+    grad:"linear-gradient(135deg,#ff7700 0%,#ff4400 50%,#ff0066 100%)",
+    gradSoft:"linear-gradient(135deg,rgba(255,119,0,0.15) 0%,rgba(255,0,102,0.08) 100%)",
+    glow:"0 0 40px rgba(255,119,0,0.4)",
+    glowSoft:"0 4px 24px rgba(255,119,0,0.15)",
+    shadow:"0 8px 40px rgba(0,0,0,0.8)",
+    shadowCard:"0 4px 32px rgba(0,0,0,0.6)",
+    nav:"rgba(14,6,0,0.85)",
+    glass:"rgba(255,119,0,0.05)",
+    glassBorder:"rgba(255,119,0,0.1)",
+  },
+  ice: {
+    name:"Ice", icon:"❄️",
+    bg:"#010a12", card:"rgba(4,18,28,0.95)", el:"rgba(6,22,34,0.9)", inp:"rgba(4,16,26,0.8)",
+    border:"rgba(0,220,255,0.1)", bFocus:"#00dcff",
+    text:"#e0f8ff", muted:"#1a4455", sub:"#44aacc",
+    accent:"#00dcff", aSoft:"rgba(0,220,255,0.12)",
+    gold:"#ffd700", silver:"#88ddee", bronze:"#4499aa",
+    grad:"linear-gradient(135deg,#00dcff 0%,#0088ff 50%,#0044cc 100%)",
+    gradSoft:"linear-gradient(135deg,rgba(0,220,255,0.15) 0%,rgba(0,68,204,0.08) 100%)",
+    glow:"0 0 40px rgba(0,220,255,0.4)",
+    glowSoft:"0 4px 24px rgba(0,220,255,0.15)",
+    shadow:"0 8px 40px rgba(0,0,0,0.8)",
+    shadowCard:"0 4px 32px rgba(0,0,0,0.6)",
+    nav:"rgba(1,10,18,0.85)",
+    glass:"rgba(0,220,255,0.04)",
+    glassBorder:"rgba(0,220,255,0.1)",
   },
 };
 
@@ -147,7 +230,13 @@ function BannerEdit({ user, setUser, t }) {
 }
 
 function Chip({ label, color }) {
-  return <span style={{background:color+"20",border:`1px solid ${color}44`,borderRadius:20,padding:"3px 9px",fontSize:11,fontWeight:700,color,flexShrink:0}}>{label}</span>;
+  return <span style={{
+    background:`linear-gradient(135deg,${color}22,${color}11)`,
+    border:`1px solid ${color}55`,
+    borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:800,color,flexShrink:0,
+    backdropFilter:"blur(8px)",letterSpacing:"0.3px",
+    boxShadow:`0 2px 8px ${color}22`
+  }}>{label}</span>;
 }
 function RolePill({ role, t }) {
   const m={admin:["👑 Admin",t.accent],pilote:["🏎️ Pilote","#6b8aff"],spectateur:["👁️ Spectateur","#6677aa"]};
@@ -157,32 +246,53 @@ function RolePill({ role, t }) {
 function Btn({ children, onClick, variant="primary", disabled=false, style={}, t, full=false }) {
   const v={
     primary:{background:t.grad,color:"#fff",border:"none",boxShadow:disabled?"none":t.glow},
-    secondary:{background:t.el,color:t.text,border:`1px solid ${t.border}`},
-    ghost:{background:"transparent",color:t.muted,border:`1px solid ${t.border}`},
-    danger:{background:"rgba(192,0,0,0.9)",color:"#fff",border:"none"},
+    secondary:{background:t.glass,color:t.text,border:`1px solid ${t.glassBorder}`,backdropFilter:"blur(12px)"},
+    ghost:{background:"transparent",color:t.sub,border:`1px solid ${t.glassBorder}`},
+    danger:{background:"linear-gradient(135deg,rgba(220,0,0,0.9),rgba(180,0,0,0.9))",color:"#fff",border:"none"},
   };
   return (
-    <button onClick={onClick} disabled={disabled} style={{...v[variant],borderRadius:12,cursor:disabled?"not-allowed":"pointer",fontWeight:700,opacity:disabled?0.4:1,display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,padding:"11px 18px",fontSize:14,width:full?"100%":"auto",minHeight:44,...style}}>
+    <button onClick={onClick} disabled={disabled} style={{
+      ...v[variant],
+      borderRadius:14,cursor:disabled?"not-allowed":"pointer",fontWeight:700,
+      opacity:disabled?0.4:1,display:"inline-flex",alignItems:"center",justifyContent:"center",
+      gap:6,padding:"12px 20px",fontSize:14,width:full?"100%":"auto",minHeight:44,
+      transition:"all 0.2s cubic-bezier(0.4,0,0.2,1)",
+      transform:"translateY(0) scale(1)",
+      ...style
+    }}
+    onMouseDown={e=>!disabled&&(e.currentTarget.style.transform="scale(0.97)")}
+    onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}
+    onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}
+    >
       {children}
     </button>
   );
 }
 function Inp({ label, type="text", value, onChange, placeholder, icon, error, t, children, multi, rows=3 }) {
   const[f,setF]=useState(false);
-  const base={width:"100%",boxSizing:"border-box",padding:`13px ${icon?"42px":"14px"}`,background:t.inp,border:`1.5px solid ${f?t.bFocus:error?"#c04040":t.border}`,borderRadius:12,color:t.text,fontSize:16,outline:"none",fontFamily:"inherit",transition:"border-color .15s",minHeight:multi?"80px":"auto"};
+  const base={
+    width:"100%",boxSizing:"border-box",
+    padding:`14px ${icon?"44px":"16px"}`,
+    background:f?`${t.glass}`:`${t.inp}`,
+    border:`1.5px solid ${f?t.accent:error?"rgba(220,0,0,0.5)":t.glassBorder}`,
+    borderRadius:14,color:t.text,fontSize:15,outline:"none",fontFamily:"inherit",
+    transition:"all 0.2s ease",minHeight:multi?"80px":"auto",
+    backdropFilter:"blur(12px)",
+    boxShadow:f?`0 0 0 3px ${t.aSoft},${t.glowSoft}`:"none",
+  };
   return (
-    <div style={{marginBottom:14}}>
-      {label&&<div style={{fontSize:11,fontWeight:700,color:t.sub,marginBottom:6,letterSpacing:"0.8px"}}>{label}</div>}
+    <div style={{marginBottom:16}}>
+      {label&&<div style={{fontSize:10,fontWeight:800,color:t.sub,marginBottom:7,letterSpacing:"1.2px",textTransform:"uppercase"}}>{label}</div>}
       {children?children:(
         <div style={{position:"relative"}}>
-          {icon&&<span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",fontSize:18,pointerEvents:"none",zIndex:1}}>{icon}</span>}
+          {icon&&<span style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:18,pointerEvents:"none",zIndex:1,opacity:0.7}}>{icon}</span>}
           {multi
             ?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} onFocus={()=>setF(true)} onBlur={()=>setF(false)} rows={rows} style={{...base,resize:"vertical"}}/>
             :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} onFocus={()=>setF(true)} onBlur={()=>setF(false)} style={base}/>
           }
         </div>
       )}
-      {error&&<div style={{fontSize:12,color:"#f06060",marginTop:4}}>⚠ {error}</div>}
+      {error&&<div style={{fontSize:12,color:"#ff6060",marginTop:5,display:"flex",alignItems:"center",gap:4}}>⚠ {error}</div>}
     </div>
   );
 }
@@ -213,13 +323,29 @@ function Logo({ size=36 }) {
 ═══════════════════════════════════════════════════════════ */
 function TopBar({ title, t, right, onBack, backLabel }) {
   return (
-    <div style={{position:"sticky",top:0,zIndex:100,background:t.nav,backdropFilter:"blur(20px)",borderBottom:`1px solid ${t.border}`,padding:"0 16px"}}>
-      <div style={{height:56,display:"flex",alignItems:"center",gap:10}}>
+    <div style={{
+      position:"sticky",top:0,zIndex:100,
+      background:t.nav,
+      backdropFilter:"blur(24px) saturate(180%)",
+      WebkitBackdropFilter:"blur(24px) saturate(180%)",
+      borderBottom:`1px solid ${t.glassBorder}`,
+      padding:"0 16px",
+    }}>
+      <div style={{height:58,display:"flex",alignItems:"center",gap:10}}>
         {onBack
-          ? <button onClick={onBack} style={{background:"none",border:"none",cursor:"pointer",color:t.accent,fontSize:14,fontWeight:700,display:"flex",alignItems:"center",gap:4,flexShrink:0,padding:"4px 0",minWidth:44,minHeight:44}}>‹ {backLabel||"Retour"}</button>
+          ? <button onClick={onBack} style={{
+              background:"none",border:"none",cursor:"pointer",color:t.accent,
+              fontSize:14,fontWeight:700,display:"flex",alignItems:"center",gap:4,
+              flexShrink:0,padding:"4px 0",minWidth:44,minHeight:44,
+              transition:"opacity 0.2s",
+            }}>‹ {backLabel||"Retour"}</button>
           : <Logo size={30}/>
         }
-        <div style={{flex:1,textAlign:onBack?"center":"left",fontWeight:900,color:t.text,fontSize:17,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:onBack?44:0}}>{onBack?title:""}</div>
+        <div style={{
+          flex:1,textAlign:onBack?"center":"left",fontWeight:900,color:t.text,
+          fontSize:17,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+          marginRight:onBack?44:0,letterSpacing:"-0.3px"
+        }}>{onBack?title:""}</div>
         {right||null}
       </div>
     </div>
@@ -238,7 +364,7 @@ function BottomNav({ tab, setTab, user, unread, notifCount, msgCount, t, onMenuO
     { id:"more",     icon:null,  label:"Menu",  isTire:true },
   ];
   return (
-    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:200,background:t.nav,backdropFilter:"blur(20px)",borderTop:`1px solid ${t.border}`,paddingBottom:"env(safe-area-inset-bottom,0)",display:"flex"}}>
+    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:200,background:t.nav,backdropFilter:"blur(28px) saturate(180%)",WebkitBackdropFilter:"blur(28px) saturate(180%)",borderTop:`1px solid ${t.glassBorder}`,paddingBottom:"env(safe-area-inset-bottom,0)",display:"flex"}}>
       {items.map(item=>{
         const active = tab===item.id;
         const showBadge = (item.id==="messages"&&msgCount>0)||(item.id==="home"&&(notifCount>0||unread>0));
@@ -279,43 +405,71 @@ function Drawer({ open, onClose, user, tab, setTab, theme, setTheme, unread, not
   return (
     <>
       {open&&<div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:300,backdropFilter:"blur(4px)"}} />}
-      <div style={{position:"fixed",top:0,right:0,bottom:0,width:"min(320px,90vw)",background:t.card,borderLeft:`1px solid ${t.border}`,zIndex:400,transform:open?"translateX(0)":"translateX(100%)",transition:"transform 0.28s cubic-bezier(0.4,0,0.2,1)",display:"flex",flexDirection:"column",paddingTop:"env(safe-area-inset-top,0)",paddingBottom:"env(safe-area-inset-bottom,0)",boxShadow:open?"-12px 0 60px rgba(0,0,0,0.6)":"none"}}>
-        <div style={{padding:"16px 16px 12px",borderBottom:`1px solid ${t.border}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{position:"fixed",top:0,right:0,bottom:0,width:"min(320px,90vw)",background:`linear-gradient(180deg,${t.card} 0%,${t.bg} 100%)`,backdropFilter:"blur(40px) saturate(200%)",WebkitBackdropFilter:"blur(40px) saturate(200%)",borderLeft:`1px solid ${t.glassBorder}`,zIndex:400,transform:open?"translateX(0)":"translateX(100%)",transition:"transform 0.32s cubic-bezier(0.4,0,0.2,1)",display:"flex",flexDirection:"column",paddingTop:"env(safe-area-inset-top,0)",paddingBottom:"env(safe-area-inset-bottom,0)",boxShadow:open?`-20px 0 80px rgba(0,0,0,0.7),${t.glow}`:"none"}}>
+        <div style={{padding:"18px 18px 14px",borderBottom:`1px solid ${t.glassBorder}`,display:"flex",alignItems:"center",justifyContent:"space-between",background:t.gradSoft}}>
           <Logo size={30}/>
-          <button onClick={onClose} style={{background:t.el,border:`1px solid ${t.border}`,borderRadius:10,width:36,height:36,cursor:"pointer",color:t.muted,fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
+          <button onClick={onClose} style={{background:t.glass,backdropFilter:"blur(8px)",border:`1px solid ${t.glassBorder}`,borderRadius:12,width:38,height:38,cursor:"pointer",color:t.sub,fontSize:20,display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s ease"}}>×</button>
         </div>
         {user&&(
-          <div style={{padding:"14px 16px",borderBottom:`1px solid ${t.border}`,display:"flex",alignItems:"center",gap:12}}>
-            <Av src={user.avatar} letter={user.av} color={user.color} size={46}/>
+          <div style={{padding:"16px 18px",borderBottom:`1px solid ${t.glassBorder}`,display:"flex",alignItems:"center",gap:14,background:t.glass}}>
+            <div style={{position:"relative"}}>
+              <Av src={user.avatar} letter={user.av} color={user.color} size={50}/>
+              <div style={{position:"absolute",bottom:-2,right:-2,width:14,height:14,borderRadius:"50%",background:"#22cc66",border:`2px solid ${t.bg}`}}/>
+            </div>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontWeight:800,color:t.text,fontSize:15,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user.pseudo}</div>
-              <div style={{marginTop:3}}><RolePill role={user.role} t={t}/></div>
+              <div style={{fontWeight:900,color:t.text,fontSize:16,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",letterSpacing:"-0.3px"}}>{user.pseudo}</div>
+              <div style={{marginTop:4}}><RolePill role={user.role} t={t}/></div>
             </div>
           </div>
         )}
-        <div style={{flex:1,overflowY:"auto",padding:"8px"}}>
+        <div style={{flex:1,overflowY:"auto",padding:"10px"}}>
           {items.map(item=>(
             <button key={item.id} onClick={()=>{setTab(item.id);onClose();}}
-              style={{width:"100%",display:"flex",alignItems:"center",gap:13,padding:"13px 12px",borderRadius:12,border:"none",cursor:"pointer",background:tab===item.id?t.accent+"22":"transparent",color:tab===item.id?t.accent:t.text,fontWeight:tab===item.id?700:500,fontSize:15,textAlign:"left",marginBottom:2,position:"relative",minHeight:48}}>
-              <span style={{fontSize:20}}>{item.icon}</span>
+              style={{
+                width:"100%",display:"flex",alignItems:"center",gap:14,padding:"13px 14px",
+                borderRadius:14,border:"none",cursor:"pointer",
+                background:tab===item.id?`linear-gradient(135deg,${t.accent}20,${t.accent}10)`:t.glass,
+                backdropFilter:tab===item.id?"blur(12px)":"none",
+                color:tab===item.id?t.accent:t.text,
+                fontWeight:tab===item.id?800:500,fontSize:15,textAlign:"left",marginBottom:3,
+                position:"relative",minHeight:50,
+                border:tab===item.id?`1px solid ${t.accent}33`:"1px solid transparent",
+                transition:"all 0.2s ease",
+              }}>
+              <span style={{fontSize:21,filter:tab===item.id?"none":"grayscale(30%)"}}>{item.icon}</span>
               {item.label}
-              {item.badge>0&&<span style={{marginLeft:"auto",background:t.accent,color:"#fff",borderRadius:20,fontSize:11,fontWeight:800,padding:"2px 8px"}}>{item.badge}</span>}
-              {tab===item.id&&<div style={{position:"absolute",left:0,top:"15%",bottom:"15%",width:3,background:t.accent,borderRadius:"0 3px 3px 0"}}/>}
+              {item.badge>0&&<span style={{marginLeft:"auto",background:t.grad,color:"#fff",borderRadius:20,fontSize:11,fontWeight:800,padding:"3px 9px",boxShadow:t.glowSoft}}>{item.badge}</span>}
+              {tab===item.id&&<div style={{position:"absolute",left:0,top:"20%",bottom:"20%",width:3,background:t.grad,borderRadius:"0 4px 4px 0"}}/>}
             </button>
           ))}
         </div>
-        <div style={{padding:"12px 16px",borderTop:`1px solid ${t.border}`}}>
-          <div style={{fontSize:11,fontWeight:700,color:t.muted,marginBottom:9,letterSpacing:"1px"}}>THÈME</div>
-          <div style={{display:"flex",gap:8}}>
+        <div style={{padding:"16px",borderTop:`1px solid ${t.glassBorder}`}}>
+          <div style={{fontSize:10,fontWeight:800,color:t.sub,marginBottom:12,letterSpacing:"1.5px",textTransform:"uppercase"}}>THÈME</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
             {Object.entries(THEMES).map(([k,th])=>(
-              <button key={k} onClick={()=>setTheme(k)} style={{flex:1,padding:"9px 0",borderRadius:10,border:`1.5px solid ${theme===k?t.accent:t.border}`,background:theme===k?t.accent+"22":"transparent",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,minHeight:44}}>
-                <span style={{fontSize:17}}>{th.icon}</span>
-                <span style={{fontSize:10,fontWeight:700,color:theme===k?t.accent:t.muted}}>{th.name}</span>
+              <button key={k} onClick={()=>setTheme(k)} style={{
+                padding:"10px 0",borderRadius:12,
+                border:`1.5px solid ${theme===k?th.accent:t.glassBorder}`,
+                background:theme===k?`linear-gradient(135deg,${th.accent}25,${th.accent}10)`:`${t.glass}`,
+                backdropFilter:"blur(8px)",
+                cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,minHeight:52,
+                boxShadow:theme===k?`0 4px 16px ${th.accent}30`:"none",
+                transition:"all 0.2s ease",
+              }}>
+                <span style={{fontSize:18}}>{th.icon}</span>
+                <span style={{fontSize:9,fontWeight:800,color:theme===k?th.accent:t.muted,letterSpacing:"0.5px"}}>{th.name}</span>
               </button>
             ))}
           </div>
         </div>
-        <button onClick={onLogout} style={{margin:"0 14px 14px",padding:"13px",borderRadius:12,border:"1px solid #c0404044",background:"rgba(192,64,64,0.1)",color:"#f06060",fontWeight:700,cursor:"pointer",fontSize:14,minHeight:44}}>
+        <button onClick={onLogout} style={{
+          margin:"0 16px 16px",padding:"14px",borderRadius:14,
+          border:"1px solid rgba(255,80,80,0.2)",
+          background:"rgba(255,60,60,0.08)",
+          backdropFilter:"blur(8px)",
+          color:"#ff6060",fontWeight:700,cursor:"pointer",fontSize:14,minHeight:44,
+          transition:"all 0.2s ease",
+        }}>
           🚪 Déconnexion
         </button>
       </div>
@@ -431,7 +585,7 @@ function AuthScreen({ onLogin, t }) {
   };
 
   return (
-    <div style={{minHeight:"100dvh",background:t.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"env(safe-area-inset-top,20px) 20px env(safe-area-inset-bottom,20px)",overflowY:"auto"}}>
+    <div style={{minHeight:"100dvh",background:`radial-gradient(ellipse at 20% 20%, ${t.accent}18 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, ${t.accent}10 0%, transparent 50%), ${t.bg}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"env(safe-area-inset-top,20px) 20px env(safe-area-inset-bottom,20px)",overflowY:"auto"}}>
       <div style={{textAlign:"center",marginBottom:28}}>
         <div style={{width:96,height:96,background:"#fff",borderRadius:24,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",boxShadow:"0 8px 40px rgba(232,0,45,0.3)",overflow:"hidden"}}>
           <img src="./logo.png" alt="OverTake" style={{width:"85%",height:"85%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";e.target.parentElement.innerHTML="<span style='font-size:42px'>🏎️</span>";}}/>
@@ -440,7 +594,7 @@ function AuthScreen({ onLogin, t }) {
         <div style={{fontSize:11,color:t.muted,letterSpacing:"3px",fontWeight:700,marginTop:3}}>F1 TRACKING</div>
       </div>
 
-      <div style={{width:"100%",maxWidth:440,background:t.card,borderRadius:22,padding:"24px 20px",boxShadow:t.shadow,border:`1px solid ${t.border}`}}>
+      <div style={{width:"100%",maxWidth:440,background:t.card,backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderRadius:24,padding:"28px 24px",boxShadow:t.shadow,border:`1px solid ${t.glassBorder}`}}>
         {step==="login"&&<>
           <div style={{fontSize:22,fontWeight:900,color:t.text,marginBottom:4}}>Connexion</div>
           <div style={{fontSize:14,color:t.muted,marginBottom:22}}>Accède à OverTake 🏎️</div>
@@ -638,7 +792,7 @@ function StandingsPage({ races, t }) {
           ))}
         </div>
         {view==="wdc"&&WDC.map((d,i)=>(
-          <div key={d.id} style={{background:t.card,borderRadius:14,padding:"12px 14px",border:`1px solid ${i<3?d.color+"44":t.border}`,marginBottom:8,display:"flex",alignItems:"center",gap:10}}>
+          <div key={d.id} style={{background:t.card,backdropFilter:"blur(8px)",borderRadius:16,padding:"14px 16px",border:`1px solid ${i<3?d.color+"33":t.glassBorder}`,marginBottom:9,display:"flex",alignItems:"center",gap:10,boxShadow:i===0?t.glowSoft:t.shadowCard,transition:"transform 0.2s ease"}}>
             <div style={{width:4,background:d.color,borderRadius:2,alignSelf:"stretch",flexShrink:0}}/>
             <div style={{width:26,textAlign:"center",fontWeight:900,fontSize:16,color:posColor(i+1,t),flexShrink:0}}>{i===0?"👑":i+1}</div>
             <div style={{width:34,height:34,borderRadius:9,background:d.color+"22",border:`1px solid ${d.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,color:d.color,fontSize:13,flexShrink:0}}>{d.num}</div>
@@ -930,7 +1084,7 @@ function PostCard({ post, user, users, t, onLike, onDelete, onReport, onProfileC
     setCmt("");
   };
   return (
-    <div style={{background:t.card,borderRadius:18,overflow:"hidden",border:`1px solid ${post.reported?"#c0404044":t.border}`,marginBottom:12}}>
+    <div style={{background:t.card,backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderRadius:20,overflow:"hidden",border:`1px solid ${post.reported?"rgba(192,0,0,0.25)":t.glassBorder}`,marginBottom:14,boxShadow:t.shadowCard,transition:"transform 0.2s ease,box-shadow 0.2s ease"}}>
       {post.reported&&user.role==="admin"&&<div style={{background:"rgba(192,0,0,0.1)",padding:"5px 14px",fontSize:12,color:"#f08080",fontWeight:700}}>⚠ Post signalé</div>}
       <div style={{padding:"13px 14px",display:"flex",alignItems:"center",gap:11}}>
         <button onClick={()=>onProfileClick&&onProfileClick(post.authorId)} style={{background:"none",border:"none",cursor:"pointer",padding:0,flexShrink:0}}>
@@ -1798,10 +1952,21 @@ export default function App() {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         button, input, textarea, select { font-family: inherit; }
-        ::-webkit-scrollbar { width: 3px; height: 3px; }
-        ::-webkit-scrollbar-thumb { background: ${t.border}; border-radius: 2px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: ${t.glassBorder}; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: ${t.sub}; }
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes scaleIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+        @keyframes glowPulse { 0%,100%{box-shadow:${t.glow}} 50%{box-shadow:${t.glowSoft}} }
+        .card-hover:hover { transform:translateY(-2px); box-shadow:${t.shadow}; }
+        .fade-up { animation: fadeSlideUp 0.3s cubic-bezier(0.4,0,0.2,1) both; }
+        .scale-in { animation: scaleIn 0.25s cubic-bezier(0.4,0,0.2,1) both; }
+        button:active:not(:disabled) { transform: scale(0.97) !important; }
+        ::placeholder { color: ${t.muted}; opacity: 0.7; }
       `}</style>
       <div style={{flex:1,overflowY:"auto",overflowX:"hidden",paddingBottom:"calc(56px + env(safe-area-inset-bottom,0px))"}}>
         {pageContent[tab] ?? pageContent["home"]}
