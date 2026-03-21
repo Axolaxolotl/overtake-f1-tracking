@@ -585,7 +585,7 @@ function AuthScreen({ onLogin, t }) {
   };
 
   return (
-    <div style={{minHeight:"100dvh",background:`radial-gradient(ellipse at 20% 20%, ${t.accent}18 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, ${t.accent}10 0%, transparent 50%), ${t.bg}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"env(safe-area-inset-top,20px) 20px env(safe-area-inset-bottom,20px)",overflowY:"auto"}}>
+    <div style={{minHeight:"100dvh",background:`radial-gradient(ellipse at 20% 20%, ${t.accent}18 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, ${t.accent}10 0%, transparent 50%), ${t.bg}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",paddingTop:"max(env(safe-area-inset-top,20px), 40px)",paddingBottom:"env(safe-area-inset-bottom,40px)",paddingLeft:"20px",paddingRight:"20px",overflowY:"auto"}}>
       <div style={{textAlign:"center",marginBottom:28}}>
         <div style={{width:96,height:96,background:"#fff",borderRadius:24,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",boxShadow:"0 8px 40px rgba(232,0,45,0.3)",overflow:"hidden"}}>
           <img src="./logo.png" alt="OverTake" style={{width:"85%",height:"85%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";e.target.parentElement.innerHTML="<span style='font-size:42px'>🏎️</span>";}}/>
@@ -1212,13 +1212,13 @@ function MessagesPage({ messages, setMessages, user, users, t }) {
   const getName=c=>{
     if(c.type==="group")return c.name||"Groupe";
     const other=c.participants.find(id=>id!==user.id);
-    const u=users.find(x=>x.id===other);
+    const u=allUsers.find(x=>x.id===other)||users.find(x=>x.id===other);
     return u?u.pseudo:"?";
   };
   const getAv=c=>{
     if(c.type==="group")return{letter:"👥",color:"#6b8aff",src:null};
     const other=c.participants.find(id=>id!==user.id);
-    const u=users.find(x=>x.id===other);
+    const u=allUsers.find(x=>x.id===other)||users.find(x=>x.id===other);
     return u?{letter:u.av,color:u.color,src:u.avatar}:{letter:"?",color:"#888",src:null};
   };
   const lastMsg=c=>{"Commencer la conversation…";return"Commencer la conversation…";};
